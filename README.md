@@ -5,4 +5,4 @@
 
 ## Features
 - **Image Grid**: Displays images in a staggered grid layout for an appealing and dynamic user experience.
-- **Image Saving**: Users can save their favorite images to their profile for easy access later.
+- **Image Saving**: Users can save their Favorite images to their profile for easy access later.
