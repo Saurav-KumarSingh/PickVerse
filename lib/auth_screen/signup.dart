@@ -108,7 +108,7 @@ class SignupPageState extends State<SignupPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 29),
 
                 // Email Field
                 TextFormField(
