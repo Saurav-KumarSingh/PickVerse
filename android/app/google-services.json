@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "170306274024",
+    "project_id": "pickverse-bb0c9",
+    "storage_bucket": "pickverse-bb0c9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170306274024:android:90d5c59707064e7b9f7f5d",
+        "android_client_info": {
+          "package_name": "com.example.pickverse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEg3z4DOzl2EpB4189YrJ-Hhwa8cy-i80"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:lottie/lottie.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:pickverse/auth_screen/signup.dart';
+import 'firebase_options.dart';
 
-void main() {
+
+
+void main()async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -20,7 +28,7 @@ class MyApp extends StatelessWidget {
 
 class SplashScreen extends StatefulWidget {
   @override
-  _SplashScreenState createState() => _SplashScreenState(git );
+  _SplashScreenState createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
@@ -29,6 +37,10 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(const Duration(seconds: 3), () {
       //add navigator here
+      Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const SignupPage()),
+          );
     });
   }
 
