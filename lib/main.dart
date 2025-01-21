@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:lottie/lottie.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:pickverse/auth_screen/signup.dart';
+// import 'package:pickverse/auth_screen/signup.dart';
+import 'package:pickverse/screens/home.dart';
 import 'firebase_options.dart';
 
 
@@ -39,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
       //add navigator here
       Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const SignupPage()),
+            MaterialPageRoute(builder: (context) => GalleryApp()),
           );
     });
   }
@@ -55,7 +56,6 @@ class _SplashScreenState extends State<SplashScreen> {
             Image.asset('assets/logo.png',scale: 2,),
             // SizedBox(height: 40),
             Lottie.asset('assets/loaderlpicv.json'),
-
           ],
         ),
       ),
