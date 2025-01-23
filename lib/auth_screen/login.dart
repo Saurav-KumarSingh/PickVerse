@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pickverse/auth_screen/signup.dart';
+import 'package:pickverse/screens/home.dart';
+import 'package:pickverse/sharedprefrences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -35,9 +37,11 @@ class LoginPageState extends State<LoginPage> {
           );
 
           // Navigate to the home page or another page of your choice after successful login
+          Usersharedpreferences.setLogin(true);
+          Usersharedpreferences.setUserEmail(_emailController.text);
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const SignupPage()),
+            MaterialPageRoute(builder: (context) => const GooglePhotosUI()),
           );
         }
       } on FirebaseAuthException catch (e) {
@@ -66,6 +70,8 @@ class LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    Usersharedpreferences.init();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -77,7 +83,7 @@ class LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 const SizedBox(height: 50),
-                Container(
+                SizedBox(
                   width: 120,
                   height: 120,
 

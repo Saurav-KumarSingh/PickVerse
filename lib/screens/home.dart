@@ -1,209 +1,253 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:pickverse/screens/imagedetails.dart';
+import 'package:pickverse/screens/profile.dart';
 
-class GalleryApp extends StatelessWidget {
+class GooglePhotosUI extends StatefulWidget {
+  const GooglePhotosUI({super.key});
+
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Image Gallery',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: ImageGridPage(),
-    );
+  _GooglePhotosUIState createState() => _GooglePhotosUIState();
+}
+
+class _GooglePhotosUIState extends State<GooglePhotosUI> {
+  List<String> images = []; // List to store fetched image URLs
+  List<bool> likedStatus = []; // List to track liked status
+  List<String> likedImages = []; // Store URLs of liked images
+  String searchQuery = ""; // To store search input
+  int _currentIndex = 0;
+
+  // Fetch images from Pexels API
+  Future<void> fetchImages(String query) async {
+    const String apiKey = 'MAQqyNhwxkb3znWasX5WXMVaSxB9HmqfQx8xlhN8oM4ZobxL6OxEeAd7'; // Replace with your Pexels API key
+    final String url = 'https://api.pexels.com/v1/search?query=$query&per_page=20';
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Authorization': apiKey},
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List photos = data['photos'];
+
+        setState(() {
+          images = photos.map((photo) => photo['src']['medium'] as String).toList();
+          likedStatus = List.filled(images.length, false);
+        });
+      } else {
+        print('Failed to fetch images: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching images: $e');
+    }
   }
-}
-
-class ImageData {
-  final String previewURL;
-  final String pageURL;
-  final String userImageURL;
-  final String userName;
-  final int imageWidth;
-  final int imageHeight;
-
-  ImageData({
-    required this.previewURL,
-    required this.pageURL,
-    required this.userImageURL,
-    required this.userName,
-    required this.imageWidth,
-    required this.imageHeight,
-  });
-
-  factory ImageData.fromJson(Map<String, dynamic> json) {
-    return ImageData(
-      previewURL: json['previewURL'],
-      pageURL: json['pageURL'],
-      userImageURL: json['userImageURL'],
-      userName: json['user'],
-      imageWidth: json['imageWidth'],
-      imageHeight: json['imageHeight'],
-    );
-  }
-}
-
-class ImageGridPage extends StatefulWidget {
-  @override
-  _ImageGridPageState createState() => _ImageGridPageState();
-}
-
-class _ImageGridPageState extends State<ImageGridPage> {
-  List<ImageData> _images = [];
-  String _searchQuery = "";
 
   @override
   void initState() {
     super.initState();
-    fetchImages(); // Fetch images initially with an empty query or default query
-  }
-
-  Future<void> fetchImages() async {
-    final response = await http.get(Uri.parse('https://pixabay.com/api/?key=46437507-3acf8a6678b723e6b1b09f589&q=$_searchQuery'));
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        _images = (data['hits'] as List)
-            .map((item) => ImageData.fromJson(item))
-            .toList();
-      });
-    } else {
-      throw Exception('Failed to load images');
-    }
-  }
-
-  void showFullScreenPreview(BuildContext context, String imageUrl) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
-          child: Dialog(
-            backgroundColor: Colors.transparent,
-            child: Center(
-              child: SizedBox(
-                height: double.infinity,
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
+    fetchImages("nature"); // Fetch nature images when the app starts
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        elevation: 0,
         title: Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Image.asset(
-                'assets/logo.png', // Replace with your logo asset path
-                height: 50,
-              ),
+            Image.asset(
+              'assets/logo.png',
+              height: 45,
+              width: 45,
             ),
+            const SizedBox(width: 10,),
             Expanded(
-              child: Material(
-                elevation: 1.0, // Adding elevation to give it a shadow effect
-                borderRadius: BorderRadius.circular(30.0), // Rounded corners for the material
-                color: Colors.white, // Background color for the text field
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search images...',
-                    hintStyle: TextStyle(color: Colors.black), // Style for hint text
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Adjusted padding to reduce height
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0), // Border radius for rounded corners
-                      borderSide: BorderSide(
-                        color: Colors.grey, // Color of the border when the field is not focused
-                        width: 1.0, // Width of the border
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0), // Maintain rounded corners when focused
-                      borderSide: BorderSide(
-                        color: Colors.purple, // Color of the border when the field is focused
-                        width: 1.0, // Slightly thicker border when focused
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0), // Maintain rounded corners when enabled
-                      borderSide: BorderSide(
-                        color: Colors.grey.withOpacity(0.5), // Lighter border color when enabled
-                        width: 1.0, // Border width
-                      ),
-                    ),
-                  ),
-                  style: TextStyle(color: Colors.black), // Style for the text inside the text field
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value;
-                    });
-                  },
-                  onSubmitted: (value) {
-                    fetchImages();
-                  },
+              child: TextField(
+                onChanged: (value) => searchQuery = value,
+                onSubmitted: (value) {
+                  fetchImages(value); // Fetch images when user submits query
+                },
+                decoration: const InputDecoration(
+                  hintText: 'Search for images...',
+                  hintStyle: TextStyle(color: Colors.black),
+                  border: InputBorder.none,
                 ),
+                style: const TextStyle(color: Colors.black),
               ),
             ),
             IconButton(
-              icon: Icon(Icons.search),
+              icon: const Icon(Icons.search, color: Colors.black),
               onPressed: () {
-                fetchImages(); // Trigger search when button is pressed
+                fetchImages(searchQuery); // Fetch images on search button click
               },
             ),
           ],
         ),
       ),
-      body: _images.isEmpty
-          ? Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Wrap(
-                spacing: 8.0, // Horizontal spacing between items
-                runSpacing: 8.0, // Vertical spacing between rows
-                children: _images.map((image) {
-                  return GestureDetector(
-                    onTap: () {
-                      showFullScreenPreview(context, image.previewURL);
-                    },
-                    child: Container(
-                      width: MediaQuery.of(context).size.width / 2 - 12,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AspectRatio(
-                            aspectRatio: image.imageWidth / image.imageHeight,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.network(
-                                image.previewURL,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: images.isEmpty
+            ? const Center(
+          child: Text(
+            'Search for images to display here.',
+            style: TextStyle(fontSize: 16),
+          ),
+        )
+            : MasonryGridView.builder(
+          padding: const EdgeInsets.all(12.0),
+          gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+          ),
+          itemCount: images.length,
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () {
+                // Navigate to ImageDetailsPage
+                Navigator.push(
+
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ImageDetailsPage(
+                      imageUrl: images[index],
+                    ),
+                  ),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0), // Add spacing between images
+                child: Stack(
+                  children: [
+                    // Image Container
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        images[index],
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) {
+                            return child;
+                          } else {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                        },
                       ),
                     ),
-                  );
-                }).toList(),
+                    // Like Button Positioned at Top-Right
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            likedStatus[index] = !likedStatus[index];
+                            if (likedStatus[index]) {
+                              likedImages.add(images[index]);
+                            } else {
+                              likedImages.remove(images[index]);
+                            }
+                          });
+                        },
+                        child: Icon(
+                          likedStatus[index] ? Icons.favorite : Icons.favorite_border,
+                          color: likedStatus[index] ? Colors.red : Colors.white,
+                          size: 28,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            );
+          },
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.purple,
+        unselectedItemColor: Colors.grey,
+        currentIndex: _currentIndex, // To track the selected tab
+        onTap: (int index) {
+          setState(() {
+            _currentIndex = index; // Update the selected tab
+          });
+          if (index == 1) {
+            // Navigate to LikesPage
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LikesPage(likedImages: likedImages),
+              ),
+            );
+          }
+          if (index == 2) {
+            // Navigate to ProfilePage
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProfilePage(),
+              ),
+            );
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.photo),
+            label: 'Home Page',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Likes',
+          ),
+          BottomNavigationBarItem(
+            icon: CircleAvatar(
+              backgroundColor: Colors.grey,
+              child: Icon(Icons.person, color: Colors.white),
+            ),
+            label: 'Profile',
+          ),
+        ],
       ),
     );
   }
 }
+
+class LikesPage extends StatelessWidget {
+  final List<String> likedImages;
+
+  const LikesPage({super.key, required this.likedImages});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Liked Images'),
+      ),
+      body: likedImages.isEmpty
+          ? const Center(child: Text('No liked images yet.'))
+          : GridView.builder(
+        padding: const EdgeInsets.all(12.0),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+        ),
+        itemCount: likedImages.length,
+        itemBuilder: (context, index) {
+          return Container(
+            child: Image.network(
+              likedImages[index],
+              fit: BoxFit.cover,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+

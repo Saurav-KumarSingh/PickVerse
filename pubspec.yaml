@@ -38,7 +38,14 @@ dependencies:
   lottie:
   firebase_core: ^3.10.0
   firebase_auth:
+  flutter_staggered_grid_view:
+  shared_preferences:
+  firebase_database:
+  flutter_media_downloader:
+  path_provider:
 
+
+  http: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

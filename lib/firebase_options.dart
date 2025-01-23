@@ -25,22 +25,22 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
+              'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
+              'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
+              'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
+              'you can reconfigure this by running the FlutterFire CLI again.',
         );
       default:
         throw UnsupportedError(
@@ -56,6 +56,7 @@ class DefaultFirebaseOptions {
     projectId: 'pickverse-bb0c9',
     authDomain: 'pickverse-bb0c9.firebaseapp.com',
     storageBucket: 'pickverse-bb0c9.firebasestorage.app',
+    databaseURL: 'https://pickverse-bb0c9-default-rtdb.firebaseio.com/', // Added databaseURL
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -64,5 +65,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '170306274024',
     projectId: 'pickverse-bb0c9',
     storageBucket: 'pickverse-bb0c9.firebasestorage.app',
+    databaseURL: 'https://pickverse-bb0c9-default-rtdb.firebaseio.com/', // Added databaseURL
   );
 }

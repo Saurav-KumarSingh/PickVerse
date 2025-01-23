@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:lottie/lottie.dart';
 import 'package:firebase_core/firebase_core.dart';
-// import 'package:pickverse/auth_screen/signup.dart';
+import 'package:pickverse/auth_screen/signup.dart';
 import 'package:pickverse/screens/home.dart';
+import 'package:pickverse/sharedprefrences.dart';
 import 'firebase_options.dart';
 
 
 
 void main()async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SplashScreen(),
     );
@@ -28,6 +30,8 @@ class MyApp extends StatelessWidget {
 }
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -36,12 +40,17 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    Usersharedpreferences.init();
     Timer(const Duration(seconds: 3), () {
       //add navigator here
-      Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => GalleryApp()),
-          );
+      bool? loginstatus = Usersharedpreferences.getLogin() ?? false;
+      if (loginstatus == true) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const GooglePhotosUI()));
+      } else {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const SignupPage()));
+      }
     });
   }
 
